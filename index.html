@@ -431,7 +431,7 @@
       } else {
         const hour = now.getHours() + now.getMinutes() / 60;
         if (hour < CONFIG.workStartHour || hour >= CONFIG.workEndHour) {
-          $('statusText').textContent = 'Poza godzinami 08:00–16:00.<br>Czas roboczy nie jest teraz naliczany.';
+          $('statusText').textContent = 'Poza godzinami pracy - czas roboczy nie jest teraz naliczany.';
         } else {
           $('statusText').textContent = 'Aktywne okno robocze. Czas ucieka.';
         }
