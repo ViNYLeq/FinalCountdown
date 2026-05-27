@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cyberpunk Work Countdown</title>
+  <style>
+    :root {
+      --bg: #05050a;
+      --panel: rgba(10, 14, 25, 0.86);
+      --cyan: #00f6ff;
+      --pink: #ff2bd6;
+      --yellow: #f9f871;
+      --green: #39ff14;
+      --text: #e9fbff;
+      --muted: #8aa6b2;
+      --danger: #ff3864;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 43, 214, 0.22), transparent 36%),
+        radial-gradient(circle at bottom right, rgba(0, 246, 255, 0.18), transparent 34%),
+        linear-gradient(135deg, #03040a 0%, #09091a 52%, #02030a 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 246, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 246, 255, 0.055) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 88%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.035),
+        rgba(255,255,255,0.035) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      mix-blend-mode: overlay;
+      opacity: 0.18;
+    }
+
+    .wrap {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .terminal-line {
+      color: var(--green);
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+    }
+
+    .hero {
+      position: relative;
+      border: 1px solid rgba(0, 246, 255, 0.46);
+      background: var(--panel);
+      box-shadow:
+        0 0 28px rgba(0, 246, 255, 0.22),
+        inset 0 0 38px rgba(255, 43, 214, 0.08);
+      border-radius: 22px;
+      padding: 34px;
+      overflow: hidden;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 4px;
+      background: var(--pink);
+      filter: blur(0.2px);
+      box-shadow: 0 0 16px var(--pink);
+    }
+
+    .hero::before {
+      top: 0;
+      left: 32px;
+    }
+
+    .hero::after {
+      bottom: 0;
+      right: 32px;
+      background: var(--cyan);
+      box-shadow: 0 0 16px var(--cyan);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 7vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+      text-shadow:
+        3px 0 0 rgba(255, 43, 214, 0.8),
+        -3px 0 0 rgba(0, 246, 255, 0.8),
+        0 0 24px rgba(0, 246, 255, 0.4);
+    }
+
+    .subtitle {
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 22px 0 0;
+      font-size: 1rem;
+    }
+
+    .date-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 10px 14px;
+      color: #05050a;
+      background: var(--yellow);
+      border: 1px solid #fff7a5;
+      box-shadow: 0 0 24px rgba(249, 248, 113, 0.35);
+      font-weight: 800;
+      text-transform: uppercase;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      position: relative;
+      padding: 24px 18px;
+      border: 1px solid rgba(255, 43, 214, 0.42);
+      background: linear-gradient(180deg, rgba(255, 43, 214, 0.11), rgba(0, 246, 255, 0.06));
+      box-shadow: 0 0 24px rgba(255, 43, 214, 0.16);
+      border-radius: 18px;
+      min-height: 150px;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: attr(data-label);
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: rgba(255,255,255,0.12);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .number {
+      display: block;
+      font-size: clamp(2.8rem, 8vw, 5.8rem);
+      line-height: 1;
+      color: var(--cyan);
+      text-shadow: 0 0 18px rgba(0, 246, 255, 0.7);
+      font-weight: 900;
+    }
+
+    .label {
+      display: block;
+      margin-top: 12px;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.92rem;
+    }
+
+    .status {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+    }
+
+    .box {
+      border: 1px solid rgba(0, 246, 255, 0.28);
+      background: rgba(255,255,255,0.035);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .box h2 {
+      margin: 0 0 14px;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.95rem;
+      text-shadow: 0 0 10px rgba(255, 43, 214, 0.7);
+    }
+
+    .box p,
+    .box li {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .progress-wrap {
+      margin-top: 18px;
+      height: 16px;
+      border: 1px solid rgba(0, 246, 255, 0.5);
+      background: rgba(0,0,0,0.35);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--pink), var(--cyan), var(--green));
+      box-shadow: 0 0 18px rgba(0, 246, 255, 0.7);
+      transition: width 0.4s ease;
+    }
+
+    .small {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 780px) {
+      .grid,
+      .status {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hero {
+        padding: 24px;
+      }
+
+      .grid,
+      .status {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="terminal-line">system://worktime-countdown.active</div>
+
+    <section class="hero">
+      <h1>Deadline<br>Countdown</h1>
+
+      <p class="subtitle">
+        Odliczanie uwzględnia wyłącznie dni robocze oraz godziny 08:00–16:00.
+        Weekendy, święta i urlopy z listy wykluczeń są pomijane.
+      </p>
+
+      <div class="date-chip">Cel: 31.07.2026, 16:00</div>
+
+      <div class="grid">
+        <div class="card" data-label="days">
+          <span class="number" id="days">0</span>
+          <span class="label">dni roboczych</span>
+        </div>
+
+        <div class="card" data-label="hours">
+          <span class="number" id="hours">0</span>
+          <span class="label">godzin</span>
+        </div>
+
+        <div class="card" data-label="minutes">
+          <span class="number" id="minutes">0</span>
+          <span class="label">minut</span>
+        </div>
+
+        <div class="card" data-label="seconds">
+          <span class="number" id="seconds">0</span>
+          <span class="label">sekund</span>
+        </div>
+      </div>
+
+      <div class="status">
+        <div class="box">
+          <h2>Status</h2>
+          <p id="statusText">Inicjalizacja licznika...</p>
+          <div class="progress-wrap">
+            <div class="progress" id="progress"></div>
+          </div>
+          <div class="small" id="progressText">Postęp: 0%</div>
+        </div>
+
+        <div class="box">
+          <h2>Wykluczenia</h2>
+          <ul>
+            <li>04.06.2026</li>
+            <li>05.06.2026</li>
+            <li>27.06.2026 – 19.07.2026</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const CONFIG = {
+      startDate: '2026-05-27T08:00:00',
+      endDate: '2026-07-31T16:00:00',
+      workStartHour: 8,
+      workEndHour: 16,
+      excludedRanges: [
+        ['2026-06-04', '2026-06-04'],
+        ['2026-06-05', '2026-06-05'],
+        ['2026-06-27', '2026-07-19'],
+      ],
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function toDateOnly(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function isExcluded(date) {
+      const d = toDateOnly(date);
+
+      return CONFIG.excludedRanges.some(([from, to]) => {
+        const start = toDateOnly(from);
+        const end = toDateOnly(to);
+        return d >= start && d <= end;
+      });
+    }
+
+    function isWorkingDay(date) {
+      const day = date.getDay();
+      const isWeekend = day === 0 || day === 6;
+      return !isWeekend && !isExcluded(date);
+    }
+
+    function getWorkingSecondsBetween(fromDate, toDate) {
+      if (fromDate >= toDate) return 0;
+
+      let current = new Date(fromDate);
+      let totalSeconds = 0;
+
+      while (current < toDate) {
+        if (isWorkingDay(current)) {
+          const dayStart = new Date(current);
+          dayStart.setHours(CONFIG.workStartHour, 0, 0, 0);
+
+          const dayEnd = new Date(current);
+          dayEnd.setHours(CONFIG.workEndHour, 0, 0, 0);
+
+          const rangeStart = current > dayStart ? current : dayStart;
+          const rangeEnd = toDate < dayEnd ? toDate : dayEnd;
+
+          if (rangeStart < rangeEnd) {
+            totalSeconds += Math.floor((rangeEnd - rangeStart) / 1000);
+          }
+        }
+
+        current.setDate(current.getDate() + 1);
+        current.setHours(0, 0, 0, 0);
+      }
+
+      return Math.max(0, totalSeconds);
+    }
+
+    function formatWorkTime(totalSeconds) {
+      const workdaySeconds = (CONFIG.workEndHour - CONFIG.workStartHour) * 3600;
+      const days = Math.floor(totalSeconds / workdaySeconds);
+      const restAfterDays = totalSeconds % workdaySeconds;
+      const hours = Math.floor(restAfterDays / 3600);
+      const minutes = Math.floor((restAfterDays % 3600) / 60);
+      const seconds = restAfterDays % 60;
+
+      return { days, hours, minutes, seconds };
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const start = new Date(CONFIG.startDate);
+      const end = new Date(CONFIG.endDate);
+
+      const remainingSeconds = getWorkingSecondsBetween(now, end);
+      const totalSeconds = getWorkingSecondsBetween(start, end);
+      const elapsedSeconds = Math.max(0, totalSeconds - remainingSeconds);
+      const progress = totalSeconds > 0
+        ? Math.min(100, Math.max(0, (elapsedSeconds / totalSeconds) * 100))
+        : 100;
+
+      const t = formatWorkTime(remainingSeconds);
+
+      $('days').textContent = t.days;
+      $('hours').textContent = t.hours.toString().padStart(2, '0');
+      $('minutes').textContent = t.minutes.toString().padStart(2, '0');
+      $('seconds').textContent = t.seconds.toString().padStart(2, '0');
+
+      $('progress').style.width = `${progress.toFixed(2)}%`;
+      $('progressText').textContent = `Postęp: ${progress.toFixed(2)}%`;
+
+      if (now >= end) {
+        $('statusText').textContent = 'Deadline osiągnięty. System zamknięty.';
+      } else if (!isWorkingDay(now)) {
+        $('statusText').textContent = 'Poza czasem roboczym lub data wykluczona. Licznik czeka.';
+      } else {
+        const hour = now.getHours() + now.getMinutes() / 60;
+        if (hour < CONFIG.workStartHour || hour >= CONFIG.workEndHour) {
+          $('statusText').textContent = 'Poza godzinami 08:00–16:00. Czas roboczy nie jest teraz naliczany.';
+        } else {
+          $('statusText').textContent = 'Aktywne okno robocze. Czas ucieka.';
+        }
+      }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
