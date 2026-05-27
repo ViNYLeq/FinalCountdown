@@ -277,7 +277,7 @@
       <h1>Deadline<br>Countdown</h1>
 
       <p class="subtitle">
-        Odliczanie uwzględnia wyłącznie dni robocze oraz godziny 08:00–16:00.
+        Odliczanie uwzględnia wyłącznie dni robocze oraz godziny 08:00–16:00.<br>
         Weekendy, święta i urlopy z listy wykluczeń są pomijane.
       </p>
 
@@ -431,7 +431,7 @@
       } else {
         const hour = now.getHours() + now.getMinutes() / 60;
         if (hour < CONFIG.workStartHour || hour >= CONFIG.workEndHour) {
-          $('statusText').textContent = 'Poza godzinami 08:00–16:00. Czas roboczy nie jest teraz naliczany.';
+          $('statusText').textContent = 'Poza godzinami 08:00–16:00.<br>Czas roboczy nie jest teraz naliczany.';
         } else {
           $('statusText').textContent = 'Aktywne okno robocze. Czas ucieka.';
         }
